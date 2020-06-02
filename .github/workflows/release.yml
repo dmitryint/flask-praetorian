@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  buildAndTest:
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install poetry
+      run: pip install poetry
+    - name: Install dependencies
+      run: poetry install
+    - name: Run tests
+      run: |
+        poetry run flake8 flask_praetorian
+        poetry run flake8 tests
+        poetry run pytest tests
+
