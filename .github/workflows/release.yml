@@ -24,4 +24,11 @@ jobs:
         poetry run flake8 flask_praetorian
         poetry run flake8 tests
         poetry run pytest tests
+    - name: Build
+      run: poetry build
+    - name: Archive whl
+      uses: actions/upload-artifact@v1
+      with:
+        name: flask-praetorian
+        path: dist/flask_praetorian-*.whl
 
