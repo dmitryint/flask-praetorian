@@ -27,7 +27,8 @@ jobs:
     - name: Build
       run: poetry build
     - name: Archive whl
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
+        name: flask-praetorian-whl
         path: dist/flask_praetorian-*.whl
 
