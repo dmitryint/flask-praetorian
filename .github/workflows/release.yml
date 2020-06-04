@@ -29,6 +29,5 @@ jobs:
     - name: Archive whl
       uses: actions/upload-artifact@v1
       with:
-        name: flask-praetorian
         path: dist/flask_praetorian-*.whl
 
