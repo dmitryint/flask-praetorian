@@ -21,7 +21,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            return context.payload.ref.replace(/\/refs\/tags\//, '');
+            return context.payload.ref.replace(/refs\/tags\//, '');
       - name: Bump version
         run: sed -i 's/\(version = "\).*\("\)/\${{ steps.tag.outputs.result }}\2/g' pyproject.toml
       - name: Install poetry
