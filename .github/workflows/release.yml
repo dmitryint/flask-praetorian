@@ -23,7 +23,7 @@ jobs:
           script: |
             return context.payload.ref.replace(/refs\/tags\//, '');
       - name: Bump version
-        run: sed -i 's/\(version = "\).*\("\)/\${{ steps.tag.outputs.result }}\2/g' pyproject.toml
+        run: sed -i 's/\(version = "\).*\("\)/\1${{ steps.tag.outputs.result }}\2/g' pyproject.toml
       - name: Install poetry
         run: pip install poetry
       - name: Install dependencies
