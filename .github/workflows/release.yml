@@ -2,33 +2,56 @@ name: Release
 
 on:
   push:
-    branches:
-      - release
+    tags:
+      - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   buildAndTest:
     runs-on: ubuntu-18.04
 
     steps:
-    - uses: actions/checkout@master
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.7
-    - name: Install poetry
-      run: pip install poetry
-    - name: Install dependencies
-      run: poetry install
-    - name: Run tests
-      run: |
-        poetry run flake8 flask_praetorian
-        poetry run flake8 tests
-        poetry run pytest tests
-    - name: Build
-      run: poetry build
-    - name: Archive whl
-      uses: actions/upload-artifact@v2
-      with:
-        name: flask-praetorian-whl
-        path: dist/flask_praetorian-*.whl
+      - uses: actions/checkout@master
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Bump version
+        run: sed -i 's/\(version = "\).*\("\)/\11.1.1\2/g' pyproject.toml
+      - name: Install poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Run tests
+        run: |
+          poetry run flake8 flask_praetorian
+          poetry run flake8 tests
+          poetry run pytest tests
+      - name: Build
+        run: poetry build
+      - name: Archive whl
+        uses: actions/upload-artifact@v2
+        with:
+          name: flask-praetorian-whl
+          path: dist/flask_praetorian-*.whl
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: dist/flask_praetorian-*.whl
+          asset_name: flask_praetorian.whl
 
